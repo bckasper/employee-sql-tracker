@@ -34,6 +34,7 @@ function createAppHeader(){
     console.log(`                       `)
 }
 
+// This function will initialize the app by prompting the user what to do; It runs after a successful connection to the DB is made
 const initialize = () => {
     inquirer.prompt(
         {
@@ -48,7 +49,27 @@ const initialize = () => {
                 'Add a role',
                 'Add an employee',
                 'Update and employee role',
+                'Quit'
             ]
         }
     )
+    .then((response) =>{
+        const option = response.prompt
+        
+        if(option === 'View all departments'){
+            showDepartments()
+        }
+    })
+
+}
+
+// Function for SHOWING DEPARTMENTS
+const showDepartments = () => {
+    console.log('You have selected to show the departments')
+    const showDeptQuery = `SELECT dept_id AS 'Dept ID', dept_name AS Department FROM departments`
+
+    db.query(showDeptQuery, (err, rows) => {
+        if(err) throw err
+        console.table(rows)
+    })
 }
