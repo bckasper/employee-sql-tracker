@@ -65,7 +65,11 @@ const initialize = () => {
 
 // Function for SHOWING DEPARTMENTS
 const showDepartments = () => {
-    console.log('You have selected to show the departments')
+    console.log(`____________________________`)
+    console.log(`                            `)
+    console.log('\nViewing All Departments:\n')
+    console.log(`____________________________`)
+    console.log(`                            `)
     const showDeptQuery = `SELECT dept_id AS 'Dept ID', dept_name AS Department FROM departments`
 
     db.query(showDeptQuery, (err, rows) => {
