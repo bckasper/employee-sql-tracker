@@ -105,27 +105,27 @@ const showRoles = () => {
 }
 
 // Function for showing ALL EMPLOYEES
-const showEmployees = () => {
-    createQueryHeader('Viewing All Employees')
-    const showRolesQuery = `
-    SELECT 
-        emp_id AS 'EID', 
-        first_name AS 'First', 
-        last_name AS 'Last', 
-        title AS Title,
-        dept_name AS Department,
-        salary AS Salary,
-    FROM employees
-    LEFT JOIN roles
-        ON employees.role_id = roles.role_id
-    LEFT JOIN departments
-        ON employees.dept_id = departments.dept_id;`
+// const showEmployees = () => {
+//     createQueryHeader('Viewing All Employees')
+//     const showRolesQuery = `
+//     SELECT 
+//         emp_id AS 'EID', 
+//         first_name AS 'First', 
+//         last_name AS 'Last', 
+//         title AS Title,
+//         dept_name AS Department,
+//         salary AS Salary,
+//     FROM employees
+//     LEFT JOIN roles
+//         ON employees.role_id = roles.role_id
+//     LEFT JOIN departments
+//         ON employees.dept_id = departments.dept_id;`
 
-    db.query(showRolesQuery, (err, rows) => {
-        if(err) throw err
-        console.table(rows)
-    })
-}
+//     db.query(showRolesQuery, (err, rows) => {
+//         if(err) throw err
+//         console.table(rows)
+//     })
+// }
 
 
 
