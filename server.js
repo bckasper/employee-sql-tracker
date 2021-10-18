@@ -58,6 +58,8 @@ const initialize = () => {
         
         if(option === 'View all departments'){
             showDepartments()
+        } else if(option === 'View all roles'){
+            showRoles()
         }
     })
 
@@ -65,15 +67,40 @@ const initialize = () => {
 
 // Function for SHOWING DEPARTMENTS
 const showDepartments = () => {
-    console.log(`____________________________`)
-    console.log(`                            `)
-    console.log('\nViewing All Departments:\n')
-    console.log(`____________________________`)
-    console.log(`                            `)
+    createQueryHeader('Viewing All Departments')
     const showDeptQuery = `SELECT dept_id AS 'Dept ID', dept_name AS Department FROM departments`
 
     db.query(showDeptQuery, (err, rows) => {
         if(err) throw err
         console.table(rows)
     })
+}
+
+// Function for showing ALL ROLES
+const showRoles = () => {
+    createQueryHeader('Viewing All Roles')
+    const showRolesQuery = `SELECT role_id AS 'Role ID', title AS 'Title', salary AS 'Salary', dept_name AS Department FROM roles INNER JOIN departments ON roles.dept_id = departments.dept_id;`
+
+    db.query(showRolesQuery, (err, rows) => {
+        if(err) throw err
+        console.table(rows)
+    })
+}
+
+
+
+
+
+
+
+
+
+
+// Helper Functions
+const createQueryHeader = (queryName) => {
+    console.log(`____________________________`)
+    console.log(`                            `)
+    console.log(`\n${queryName}\n`)
+    console.log(`____________________________`)
+    console.log(`                            `)
 }
