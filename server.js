@@ -65,6 +65,9 @@ const initialize = () => {
         } else if(option === 'View all employees'){
             showEmployees()
 
+        } else if(option === 'Add a department'){
+            addDepartment()
+
         }
     })
 
@@ -129,11 +132,84 @@ const showEmployees = () => {
     })
 }
 
+// Function for showing ADDING A NEW DEPARTMENT
+const addDepartment = () => {
+    createQueryHeader('Adding a new department')
+    
+    inquirer.prompt(
+        {
+            type: 'input',
+            message: 'What is the name of the department you would like to add?',
+            name: 'newDepartment'
+        }
+    )
+        .then(response => {
+            const newDept = response.newDepartment
+            const addDepartmentQuery = `
+                INSERT INTO departments (dept_name)
+                VALUES ("${newDept}");`
+        
+                db.query(addDepartmentQuery, (err) => {
+                        if(err) throw err
+                        createMessage(`${newDept} added to the departments table!`)
+                        initialize()
+                    })
+            })     
+}
 
+// Function for showing ADDING A NEW DEPARTMENT
+const addDepartment = () => {
+    createQueryHeader('Adding a new department')
+    
+    inquirer.prompt(
+        {
+            type: 'input',
+            message: 'What is the name of the new department you would like to add?',
+            name: 'newDepartment'
+        }
+    )
+        .then(response => {
+            const newDept = response.newDepartment
+            const addDepartmentQuery = `
+                INSERT INTO departments (dept_name)
+                VALUES ("${newDept}");`
+        
+                db.query(addDepartmentQuery, (err) => {
+                        if(err) throw err
+                        createMessage(`${newDept} added to the departments table!`)
+                        initialize()
+                    })
+            })     
+}
 
+// Function for showing ADDING A NEW ROLE
+const addDepartment = () => {
+    createQueryHeader('Adding a new role')
+    
+    inquirer.prompt(
+        [{
+            type: 'input',
+            message: 'What is the name of the new role you would like to add?',
+            name: 'newDepartment'
+        },
+        {
 
-
-
+        }
+        ]
+    )
+        .then(response => {
+            const newDept = response.newDepartment
+            const addDepartmentQuery = `
+                INSERT INTO departments (dept_name)
+                VALUES ("${newDept}");`
+        
+                db.query(addDepartmentQuery, (err) => {
+                        if(err) throw err
+                        createMessage(`${newDept} added to the departments table!`)
+                        initialize()
+                    })
+            })     
+}
 
 
 
@@ -143,5 +219,13 @@ const createQueryHeader = (queryName) => {
     console.log(`                            `)
     console.log(`\n${queryName}\n`)
     console.log(`____________________________`)
+    console.log(`                            `)
+}
+
+const createMessage = (message) => {
+    console.log(`                            `)
+    console.log(`****************************`)
+    console.log(`\n${message}\n`)
+    console.log(`****************************`)
     console.log(`                            `)
 }
