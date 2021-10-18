@@ -58,8 +58,13 @@ const initialize = () => {
         
         if(option === 'View all departments'){
             showDepartments()
+
         } else if(option === 'View all roles'){
             showRoles()
+
+        } else if(option === 'View all employees'){
+            showEmployees()
+
         }
     })
 
@@ -68,7 +73,11 @@ const initialize = () => {
 // Function for SHOWING DEPARTMENTS
 const showDepartments = () => {
     createQueryHeader('Viewing All Departments')
-    const showDeptQuery = `SELECT dept_id AS 'Dept ID', dept_name AS Department FROM departments`
+    const showDeptQuery = `
+    SELECT 
+        dept_id AS 'Dept ID', 
+        dept_name AS Department 
+    FROM departments`
 
     db.query(showDeptQuery, (err, rows) => {
         if(err) throw err
@@ -79,7 +88,15 @@ const showDepartments = () => {
 // Function for showing ALL ROLES
 const showRoles = () => {
     createQueryHeader('Viewing All Roles')
-    const showRolesQuery = `SELECT role_id AS 'Role ID', title AS 'Title', salary AS 'Salary', dept_name AS Department FROM roles INNER JOIN departments ON roles.dept_id = departments.dept_id;`
+    const showRolesQuery = `
+    SELECT 
+        role_id AS 'Role ID', 
+        title AS 'Title', 
+        salary AS 'Salary', 
+        dept_name AS Department 
+    FROM roles 
+    INNER JOIN departments 
+        ON roles.dept_id = departments.dept_id;`
 
     db.query(showRolesQuery, (err, rows) => {
         if(err) throw err
@@ -87,7 +104,28 @@ const showRoles = () => {
     })
 }
 
+// Function for showing ALL EMPLOYEES
+const showEmployees = () => {
+    createQueryHeader('Viewing All Employees')
+    const showRolesQuery = `
+    SELECT 
+        emp_id AS 'EID', 
+        first_name AS 'First', 
+        last_name AS 'Last', 
+        title AS Title,
+        dept_name AS Department,
+        salary AS Salary,
+    FROM employees
+    LEFT JOIN roles
+        ON employees.role_id = roles.role_id
+    LEFT JOIN departments
+        ON employees.dept_id = departments.dept_id;`
 
+    db.query(showRolesQuery, (err, rows) => {
+        if(err) throw err
+        console.table(rows)
+    })
+}
 
 
 

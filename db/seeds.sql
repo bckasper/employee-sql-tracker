@@ -21,8 +21,8 @@ VALUES
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES
-("Mario", "Super", 2, 2),
+("Mario", "Super", 2, 12),
 ("Luigi", "Bros", 1, NULL),
 ("Bowser", "Koopa", 9, NULL),
 ("Princess", "Peach", 3, NULL),
-("Toad", "Mushroom", 4, 4);
+("Toad", "Mushroom", 4, 14);
