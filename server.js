@@ -174,6 +174,7 @@ const addDepartment = () => {
 const addRole = () => {
     createQueryHeader('Adding a new role')
     
+    // Process to get all of the departments into an array for the inquirer choices
     const depts = []
     const deptQuery = `SELECT * FROM departments`
     db.query(deptQuery, (err, rows) => {
@@ -184,6 +185,7 @@ const addRole = () => {
         return depts
     })
 
+    // Inquirer Prompt
     inquirer.prompt([
         {
             type: 'input',
@@ -193,7 +195,7 @@ const addRole = () => {
                 if(roleName){
                     return true
                 } else {
-                    console.log('\nPlease enter valid a role name.\n')
+                    console.log('\nPlease enter a valid role name.\n')
                     return false
                 }
             }
@@ -239,70 +241,109 @@ const addRole = () => {
 
 // Function for ADDING A NEW EMPLOYEE
 const addEmployee = () => {
-    createQueryHeader('Adding a new role')
+    createQueryHeader('Adding a new employee')
     
-    const depts = []
-    const deptQuery = `SELECT * FROM departments`
-    db.query(deptQuery, (err, rows) => {
+    // Process to get all of the roles into an array for the inquirer choices
+    const rolesArray = []
+    const rolesQuery = `SELECT * FROM roles`
+    db.query(rolesQuery, (err, rows) => {
         if(err) throw err
         for(let i = 0; i<rows.length; i++){
-            depts.push(rows[i].dept_name)
+            rolesArray.push(rows[i].title)
         }
-        return depts
+        return rolesArray
     })
 
+    // Process to get all of the employees into an array for the inquirer choices of managers
+    const empArray = []
+    const empQuery = `SELECT emp_id, first_name, last_name FROM employees WHERE (emp_id IN (SELECT manager_id FROM employees))`
+    db.query(empQuery, (err, rows) => {
+        if(err) throw err
+        for(let i = 0; i<rows.length; i++){
+            empArray.push(rows[i].first_name + ' ' + rows[i].last_name)
+        }
+        return empArray
+    })
+
+    // Inquirer prompts
     inquirer.prompt([
         {
             type: 'input',
-            message: 'What is the name of the new role you would like to add?',
-            name: 'roleName',
-            validate: roleName => {
-                if(roleName){
+            message: `What is the employee's first name?`,
+            name: 'firstName',
+            validate: firstName => {
+                if(firstName){
                     return true
                 } else {
-                    console.log('\nPlease enter valid a role name.\n')
+                    console.log('\nPlease enter a first name.\n')
                     return false
                 }
             }
         },
         {
             type: 'input',
-            message: 'What is the salary for the new role you are adding?',
-            name: 'newSalary',
-            validate: newSalary => {
-                if(isNaN(newSalary) || !newSalary){
-                    console.log('\nPlease enter a number.\n')
-                    return false
-                } else {
+            message: `What is the employee's last name?`,
+            name: 'lastName',
+            validate: lastName => {
+                if(lastName){
                     return true
+                } else {
+                    console.log('\nPlease enter a first name.\n')
+                    return false
                 }
             }
         },
         {
             type: 'list',
-            message: 'Please select a department for this role.',
-            name: 'newRoleDept',
-            choices: depts
+            message: `Please select the employee's role.`,
+            name: 'newEmpRole',
+            choices: rolesArray
+        },
+        {
+            type: 'list',
+            message: `Please select the employee's manager.`,
+            name: 'newEmpMgr',
+            choices: empArray
         }
     ])
         .then(response => {
-            const roleName = response.roleName
-            const newSalary = response.newSalary
-            const newRoleDept = response.newRoleDept
-            
-            const getDeptID = `SELECT dept_id FROM departments WHERE dept_name = '${newRoleDept}'`
+            const firstName = response.firstName
+            const lastName = response.lastName
+            const newEmpRole = response.newEmpRole
+            const newEmpMgr = response.newEmpMgr
 
-            const addRoleQuery = `
-                INSERT INTO roles (title, salary, dept_id)
-                VALUES ("${roleName}", ${newSalary}, (${getDeptID}));`
-        
-                db.query(addRoleQuery, (err) => {
+            const getRoleID = `SELECT role_id FROM roles WHERE title = '${newEmpRole}'`
+            
+            
+            // Query that will get the employee ID of the manager from the concat of first_name and last_name
+            db.query(`SELECT emp_id FROM employees WHERE CONCAT(first_name, " ",last_name) = '${newEmpMgr}'`, (err, row) => {
+                if(err) throw err
+                
+                // Result from the query to get the employee ID of the manager
+                const mgrID =  row[0].emp_id
+
+                // Query to insert the employee into the employees table
+                const addEmpQuery = `
+                    INSERT INTO employees (first_name, last_name, role_id, manager_id)
+                    VALUES ("${firstName}", "${lastName}", (${getRoleID}), (${mgrID}));`
+    
+                // Query execution of inserting the employee into the employee table
+                db.query(addEmpQuery, (err) => {
                         if(err) throw err
-                        createMessage(`${roleName} added to the roles table!`)
+                        createMessage(`${firstName} ${lastName} added to the employees table!`)
                         initialize()
                     })
-            })     
+                })     
+            })           
 }
+
+const updateEmployee = () => {
+    
+}
+
+
+
+
 
 
 
