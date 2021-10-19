@@ -345,7 +345,49 @@ const addEmployee = () => {
 }
 
 const updateEmployee = () => {
-    
+    createQueryHeader('Updating an employee')
+
+    // Process to get all of the roles into an array for the inquirer choices
+    const rolesArray = []
+    const rolesQuery = `SELECT * FROM roles`
+    db.query(rolesQuery, (err, rows) => {
+        if(err) throw err
+        for(let i = 0; i<rows.length; i++){
+            rolesArray.push(rows[i].title)
+        }
+        return rolesArray
+    })
+
+    // Process to get all of the employees into an array for the inquirer choices of managers
+    const empArray = []
+    const empQuery = `SELECT emp_id, first_name, last_name FROM employees`
+    db.query(empQuery, (err, rows) => {
+        if(err) throw err
+        for(let i = 0; i<rows.length; i++){
+            empArray.push(rows[i].first_name + ' ' + rows[i].last_name)
+        }
+        return empArray
+    })
+
+    // Inquirer Prompt
+    inquirer.prompt([
+        {
+            type: 'list',
+            message: `Which employee would you like to update?`,
+            name: 'employee',
+            choices: empArray
+        },
+        {
+            type: 'list',
+            message: `Which role would you like to assign to this employee?`,
+            name: 'employee',
+            choices: rolesArray
+        }
+    ])
+      .then((responses) => {
+          
+      })
+
 }
 
 
