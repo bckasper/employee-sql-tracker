@@ -243,7 +243,7 @@ const addEmployee = () => {
     })
 
     // Process to get all of the employees into an array for the inquirer choices of managers
-    const empArray = []
+    const empArray = ['None']
     const empQuery = `SELECT emp_id, first_name, last_name FROM employees WHERE (emp_id IN (SELECT manager_id FROM employees))`
     db.query(empQuery, (err, rows) => {
         if(err) throw err
@@ -291,7 +291,7 @@ const addEmployee = () => {
             type: 'list',
             message: `Please select the employee's manager.`,
             name: 'newEmpMgr',
-            choices: empArray
+            choices: empArray,
         }
     ])
         .then(response => {
@@ -302,18 +302,12 @@ const addEmployee = () => {
 
             const getRoleID = `SELECT role_id FROM roles WHERE title = '${newEmpRole}'`
             
-            
-            // Query that will get the employee ID of the manager from the concat of first_name and last_name
-            db.query(`SELECT emp_id FROM employees WHERE CONCAT(first_name, " ",last_name) = '${newEmpMgr}'`, (err, row) => {
-                if(err) throw err
-                
-                // Result from the query to get the employee ID of the manager
-                const mgrID =  row[0].emp_id
-
+            // This is the path if the user selects "None" for a manager
+            if(newEmpMgr === 'None'){
                 // Query to insert the employee into the employees table
                 const addEmpQuery = `
                     INSERT INTO employees (first_name, last_name, role_id, manager_id)
-                    VALUES ("${firstName}", "${lastName}", (${getRoleID}), (${mgrID}));`
+                    VALUES ("${firstName}", "${lastName}", (${getRoleID}), Null);`
     
                 // Query execution of inserting the employee into the employee table
                 db.query(addEmpQuery, (err) => {
@@ -321,8 +315,33 @@ const addEmployee = () => {
                         createMessage(`${firstName} ${lastName} added to the employees table!`)
                         initialize()
                     })
-                })     
+            
+            // This is the path if the user selects someone as a manager
+            } else {
+
+                // Query that will get the employee ID of the manager from the concat of first_name and last_name
+                db.query(`SELECT emp_id FROM employees WHERE CONCAT(first_name, " ",last_name) = '${newEmpMgr}'`, (err, row) => {
+                    if(err) throw err
+                    
+                    
+                    // Result from the query to get the employee ID of the manager
+                    const mgrID =  row[0].emp_id
+    
+                    // Query to insert the employee into the employees table
+                    const addEmpQuery = `
+                        INSERT INTO employees (first_name, last_name, role_id, manager_id)
+                        VALUES ("${firstName}", "${lastName}", (${getRoleID}), (${mgrID}));`
+        
+                    // Query execution of inserting the employee into the employee table
+                    db.query(addEmpQuery, (err) => {
+                            if(err) throw err
+                            createMessage(`${firstName} ${lastName} added to the employees table!`)
+                            initialize()
+                        })
+                    })     
+                }
             })           
+            
 }
 
 const updateEmployee = () => {
