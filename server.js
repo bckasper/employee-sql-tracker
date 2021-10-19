@@ -21,18 +21,6 @@ db.connect(err => {
     initialize();
 })
 
-// Make a header in the terminal for the application
-function createAppHeader(){
-    console.log(`_______________________`)
-    console.log(`|                     |`)
-    console.log(`|      EMPLOYEE       |`)
-    console.log(`|     MANAGEMENT      |`)
-    console.log(`|       SYSTEM        |`)
-    console.log(`|_____________________|`)
-    console.log(`                       `)
-    console.log(`                       `)
-    console.log(`                       `)
-}
 
 // This function will initialize the app by prompting the user what to do; It runs after a successful connection to the DB is made
 const initialize = () => {
@@ -348,6 +336,20 @@ const updateEmployee = () => {
 
 
 // Helper Functions
+// Make a header in the terminal for the application
+function createAppHeader(){
+    console.log(`_______________________`)
+    console.log(`|                     |`)
+    console.log(`|      EMPLOYEE       |`)
+    console.log(`|     MANAGEMENT      |`)
+    console.log(`|       SYSTEM        |`)
+    console.log(`|_____________________|`)
+    console.log(`                       `)
+    console.log(`                       `)
+    console.log(`                       `)
+}
+
+// Make a query header in the terminal
 const createQueryHeader = (queryName) => {
     console.log(`____________________________`)
     console.log(`                            `)
@@ -356,6 +358,7 @@ const createQueryHeader = (queryName) => {
     console.log(`                            `)
 }
 
+// Create  message in the terminal
 const createMessage = (message) => {
     console.log(`                            `)
     console.log(`****************************`)
