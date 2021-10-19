@@ -48,7 +48,7 @@ const initialize = () => {
                 'Add a department',
                 'Add a role',
                 'Add an employee',
-                'Update and employee role',
+                'Update an employee role',
                 'Quit'
             ]
         }
@@ -68,6 +68,19 @@ const initialize = () => {
         } else if(option === 'Add a department'){
             addDepartment()
 
+        } else if(option === 'Add a role'){
+            addRole()
+
+        } else if(option === 'Add an employee'){
+            addEmployee()
+
+        } else if(option === 'Update an employee role'){
+            updateEmployee()
+
+        } else if(option === 'Quit'){
+            console.log('Goodbye')
+            db.end()
+            process.exit()
         }
     })
 
@@ -157,55 +170,135 @@ const addDepartment = () => {
             })     
 }
 
-// Function for showing ADDING A NEW DEPARTMENT
-const addDepartment = () => {
-    createQueryHeader('Adding a new department')
+// Function for ADDING A NEW ROLE
+const addRole = () => {
+    createQueryHeader('Adding a new role')
     
-    inquirer.prompt(
+    const depts = []
+    const deptQuery = `SELECT * FROM departments`
+    db.query(deptQuery, (err, rows) => {
+        if(err) throw err
+        for(let i = 0; i<rows.length; i++){
+            depts.push(rows[i].dept_name)
+        }
+        return depts
+    })
+
+    inquirer.prompt([
         {
             type: 'input',
-            message: 'What is the name of the new department you would like to add?',
-            name: 'newDepartment'
+            message: 'What is the name of the new role you would like to add?',
+            name: 'roleName',
+            validate: roleName => {
+                if(roleName){
+                    return true
+                } else {
+                    console.log('\nPlease enter valid a role name.\n')
+                    return false
+                }
+            }
+        },
+        {
+            type: 'input',
+            message: 'What is the salary for the new role you are adding?',
+            name: 'newSalary',
+            validate: newSalary => {
+                if(isNaN(newSalary) || !newSalary){
+                    console.log('\nPlease enter a number.\n')
+                    return false
+                } else {
+                    return true
+                }
+            }
+        },
+        {
+            type: 'list',
+            message: 'Please select a department for this role.',
+            name: 'newRoleDept',
+            choices: depts
         }
-    )
+    ])
         .then(response => {
-            const newDept = response.newDepartment
-            const addDepartmentQuery = `
-                INSERT INTO departments (dept_name)
-                VALUES ("${newDept}");`
+            const roleName = response.roleName
+            const newSalary = response.newSalary
+            const newRoleDept = response.newRoleDept
+            
+            const getDeptID = `SELECT dept_id FROM departments WHERE dept_name = '${newRoleDept}'`
+
+            const addRoleQuery = `
+                INSERT INTO roles (title, salary, dept_id)
+                VALUES ("${roleName}", ${newSalary}, (${getDeptID}));`
         
-                db.query(addDepartmentQuery, (err) => {
+                db.query(addRoleQuery, (err) => {
                         if(err) throw err
-                        createMessage(`${newDept} added to the departments table!`)
+                        createMessage(`${roleName} added to the roles table!`)
                         initialize()
                     })
             })     
 }
 
-// Function for showing ADDING A NEW ROLE
-const addDepartment = () => {
+// Function for ADDING A NEW EMPLOYEE
+const addEmployee = () => {
     createQueryHeader('Adding a new role')
     
-    inquirer.prompt(
-        [{
+    const depts = []
+    const deptQuery = `SELECT * FROM departments`
+    db.query(deptQuery, (err, rows) => {
+        if(err) throw err
+        for(let i = 0; i<rows.length; i++){
+            depts.push(rows[i].dept_name)
+        }
+        return depts
+    })
+
+    inquirer.prompt([
+        {
             type: 'input',
             message: 'What is the name of the new role you would like to add?',
-            name: 'newDepartment'
+            name: 'roleName',
+            validate: roleName => {
+                if(roleName){
+                    return true
+                } else {
+                    console.log('\nPlease enter valid a role name.\n')
+                    return false
+                }
+            }
         },
         {
-
+            type: 'input',
+            message: 'What is the salary for the new role you are adding?',
+            name: 'newSalary',
+            validate: newSalary => {
+                if(isNaN(newSalary) || !newSalary){
+                    console.log('\nPlease enter a number.\n')
+                    return false
+                } else {
+                    return true
+                }
+            }
+        },
+        {
+            type: 'list',
+            message: 'Please select a department for this role.',
+            name: 'newRoleDept',
+            choices: depts
         }
-        ]
-    )
+    ])
         .then(response => {
-            const newDept = response.newDepartment
-            const addDepartmentQuery = `
-                INSERT INTO departments (dept_name)
-                VALUES ("${newDept}");`
+            const roleName = response.roleName
+            const newSalary = response.newSalary
+            const newRoleDept = response.newRoleDept
+            
+            const getDeptID = `SELECT dept_id FROM departments WHERE dept_name = '${newRoleDept}'`
+
+            const addRoleQuery = `
+                INSERT INTO roles (title, salary, dept_id)
+                VALUES ("${roleName}", ${newSalary}, (${getDeptID}));`
         
-                db.query(addDepartmentQuery, (err) => {
+                db.query(addRoleQuery, (err) => {
                         if(err) throw err
-                        createMessage(`${newDept} added to the departments table!`)
+                        createMessage(`${roleName} added to the roles table!`)
                         initialize()
                     })
             })     
