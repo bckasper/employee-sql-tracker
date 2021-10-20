@@ -230,28 +230,6 @@ const addRole = () => {
 // Function for ADDING A NEW EMPLOYEE
 const addEmployee = () => {
     createQueryHeader('Adding a new employee')
-    
-    // Process to get all of the roles into an array for the inquirer choices
-    const rolesArray = []
-    const rolesQuery = `SELECT * FROM roles`
-    db.query(rolesQuery, (err, rows) => {
-        if(err) throw err
-        for(let i = 0; i<rows.length; i++){
-            rolesArray.push(rows[i].title)
-        }
-        return rolesArray
-    })
-
-    // Process to get all of the employees into an array for the inquirer choices of managers
-    const empArray = ['None']
-    const empQuery = `SELECT emp_id, first_name, last_name FROM employees WHERE (emp_id IN (SELECT manager_id FROM employees))`
-    db.query(empQuery, (err, rows) => {
-        if(err) throw err
-        for(let i = 0; i<rows.length; i++){
-            empArray.push(rows[i].first_name + ' ' + rows[i].last_name)
-        }
-        return empArray
-    })
 
     // Inquirer prompts
     inquirer.prompt([
@@ -291,7 +269,7 @@ const addEmployee = () => {
             type: 'list',
             message: `Please select the employee's manager.`,
             name: 'newEmpMgr',
-            choices: empArray,
+            choices: mgrArray,
         }
     ])
         .then(response => {
@@ -345,56 +323,72 @@ const addEmployee = () => {
 }
 
 const updateEmployee = () => {
-    createQueryHeader('Updating an employee')
-
-    // Process to get all of the roles into an array for the inquirer choices
-    const rolesArray = []
-    const rolesQuery = `SELECT * FROM roles`
-    db.query(rolesQuery, (err, rows) => {
-        if(err) throw err
-        for(let i = 0; i<rows.length; i++){
-            rolesArray.push(rows[i].title)
-        }
-        return rolesArray
-    })
-
-    // Process to get all of the employees into an array for the inquirer choices of managers
-    const empArray = []
-    const empQuery = `SELECT emp_id, first_name, last_name FROM employees`
-    db.query(empQuery, (err, rows) => {
-        if(err) throw err
-        for(let i = 0; i<rows.length; i++){
-            empArray.push(rows[i].first_name + ' ' + rows[i].last_name)
-        }
-        return empArray
-    })
+    createQueryHeader('Updating an employee')    
 
     // Inquirer Prompt
     inquirer.prompt([
         {
             type: 'list',
             message: `Which employee would you like to update?`,
-            name: 'employee',
+            name: 'updatedEmployee',
             choices: empArray
         },
         {
             type: 'list',
             message: `Which role would you like to assign to this employee?`,
-            name: 'employee',
+            name: 'updatedRole',
             choices: rolesArray
         }
     ])
-      .then((responses) => {
-          
-      })
+      .then((response) => {
+        const updatedEmp = response.updatedEmployee
+        const updatedRole = response.updatedRole
 
+        const getRoleID = `SELECT role_id FROM roles WHERE title = '${updatedRole}'`
+        const updateQuery = `UPDATE employees SET role_id = (${getRoleID}) WHERE CONCAT(employees.first_name," ",employees.last_name) = '${updatedEmp}';`
+
+        db.query(updateQuery, (err) => {
+            if(err) throw err
+            createMessage(`${updatedEmp} updated on the employees table!`)
+            initialize()
+        })
+      })
 }
 
+// QUERIES
+// Query for getting all employees (used in add employee and update employee functions)
+const empArray = []
+const empQuery = `SELECT emp_id, first_name, last_name FROM employees`
+db.query(empQuery, (err, rows) => {
+    if(err) throw err
+    for(let i = 0; i<rows.length; i++){
+        empArray.push(rows[i].first_name + ' ' + rows[i].last_name)
+    }
+    // console.log(empArray)
+    return empArray
+})
 
+// Query for getting all managers (used in add employee function)
+const mgrArray = ['None']
+const mgrQuery = `SELECT emp_id, first_name, last_name FROM employees WHERE (emp_id IN (SELECT manager_id FROM employees))`
+db.query(mgrQuery, (err, rows) => {
+    if(err) throw err
+    for(let i = 0; i<rows.length; i++){
+        mgrArray.push(rows[i].first_name + ' ' + rows[i].last_name)
+    }
+    return mgrArray
+})
 
-
-
-
+// Query for getting all roles (used in add employee and update employee functions)
+const rolesArray = []
+const rolesQuery = `SELECT * FROM roles`
+db.query(rolesQuery, (err, rows) => {
+    if(err) throw err
+    for(let i = 0; i<rows.length; i++){
+        rolesArray.push(rows[i].title)
+    }
+    return rolesArray
+})
 
 // Helper Functions
 // Make a header in the terminal for the application
