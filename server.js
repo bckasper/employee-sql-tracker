@@ -357,6 +357,7 @@ const updateEmployee = () => {
       })
 }
 
+// Arrays used as choices in the inquirer functions
 const empArray = []
 const mgrArray = ['None']
 const rolesArray = []
