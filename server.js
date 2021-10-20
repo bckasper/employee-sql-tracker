@@ -1,10 +1,10 @@
-// Application requirements
+// APPLICATION REQUIREMENTS
 const mysql = require('mysql2')
 const cTable = require('console.table')
 const inquirer = require('inquirer')
 require('dotenv').config()
 
-// Connection to the database
+// CONNECTION TO THE DATABASE
 const db = mysql.createConnection(
     {
         host: process.env.DB_HOST,
@@ -24,6 +24,7 @@ db.connect(err => {
 
 // This function will initialize the app by prompting the user what to do; It runs after a successful connection to the DB is made
 const initialize = () => {
+    runQueries()
     inquirer.prompt(
         {
             type: 'list',
@@ -74,6 +75,7 @@ const initialize = () => {
 
 }
 
+// FUNCTIONS FOR THE APPLICATION
 // Function for SHOWING DEPARTMENTS
 const showDepartments = () => {
     createQueryHeader('Viewing All Departments')
@@ -319,9 +321,9 @@ const addEmployee = () => {
                     })     
                 }
             })           
-            
 }
 
+// Function for UPDATING AN EMPLOYEE'S ROLE
 const updateEmployee = () => {
     createQueryHeader('Updating an employee')    
 
@@ -355,40 +357,49 @@ const updateEmployee = () => {
       })
 }
 
-// QUERIES
-// Query for getting all employees (used in add employee and update employee functions)
 const empArray = []
+const mgrArray = ['None']
+const rolesArray = []
+
+// QUERIES FOR THE APPLICATION - these will be rerun at the end of every option to make sure data is up to date if the user continues to make changes.
+const runQueries = () => {
+// Query for getting all employees (used in add employee and update employee functions)
 const empQuery = `SELECT emp_id, first_name, last_name FROM employees`
 db.query(empQuery, (err, rows) => {
     if(err) throw err
     for(let i = 0; i<rows.length; i++){
-        empArray.push(rows[i].first_name + ' ' + rows[i].last_name)
+        const fullName = rows[i].first_name + ' ' + rows[i].last_name
+        if(!empArray.includes(fullName)){ 
+        empArray.push(fullName)}
     }
     // console.log(empArray)
     return empArray
 })
 
 // Query for getting all managers (used in add employee function)
-const mgrArray = ['None']
 const mgrQuery = `SELECT emp_id, first_name, last_name FROM employees WHERE (emp_id IN (SELECT manager_id FROM employees))`
 db.query(mgrQuery, (err, rows) => {
     if(err) throw err
     for(let i = 0; i<rows.length; i++){
-        mgrArray.push(rows[i].first_name + ' ' + rows[i].last_name)
+        const fullName = rows[i].first_name + ' ' + rows[i].last_name
+        if(!mgrArray.includes(fullName))
+        mgrArray.push(fullName)
     }
     return mgrArray
 })
 
 // Query for getting all roles (used in add employee and update employee functions)
-const rolesArray = []
 const rolesQuery = `SELECT * FROM roles`
 db.query(rolesQuery, (err, rows) => {
     if(err) throw err
     for(let i = 0; i<rows.length; i++){
-        rolesArray.push(rows[i].title)
+        const role = rows[i].title
+        if(!rolesArray.includes(role))
+        rolesArray.push(role)
     }
     return rolesArray
 })
+}
 
 // Helper Functions
 // Make a header in the terminal for the application
@@ -406,10 +417,10 @@ function createAppHeader(){
 
 // Make a query header in the terminal
 const createQueryHeader = (queryName) => {
-    console.log(`____________________________`)
     console.log(`                            `)
+    console.log(`++++++++++++++++++++++++++++`)
     console.log(`\n${queryName}\n`)
-    console.log(`____________________________`)
+    console.log(`++++++++++++++++++++++++++++`)
     console.log(`                            `)
 }
 
