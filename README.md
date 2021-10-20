@@ -37,6 +37,8 @@ This code is run out of the terminal using MySQL. Below is a link to the demo vi
 
 6. Once the user has completed the tasks they wanted to do in the application, they can choose 'Quit' in the list of prompts to exit the application.
 
+## Screenshots of note taker app
+![Screenshot of Employee Tracker](demo/employee-tracker-screenshot.png) 
 
 ## Contributors
 This was a solo project developed by me.
